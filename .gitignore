@@ -1,0 +1,10 @@
+.DS_Store
+
+all/*
+csv/*
+cumulative/*
+fast/*
+gps/*
+locations/*
+points/*
+slow/*
