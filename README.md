@@ -17,6 +17,7 @@ Folder structure
 ├── shapefile_cumulative
 ├── shapefile_yearly
 ├── slow
+├── static
 ├── venv
 ├── visualizations
 ├── visualizations_geopandas
@@ -36,4 +37,16 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 
 - `cumulative_points.py` takes the points from `/points` and creates a cumulative points file in `/cumulative` with a naming scheme like this `20200319_points.geojson`. These are all points up to that date. Should there be a day, for which no location file was present, there is still a cumulative one. So from now on every date from the start date is covered.
 
-- `combine_pionts_yearly.py` takes the points from _points (which is only points for distances traveled with less then 10 km/h) and creates a cumulative file for each year where 
+- `combine_pionts_yearly.py` takes the points from _points (which is only points for distances traveled with less then 10 km/h) and creates a file for each year.
+
+- `visualize_points_with_counts.py` creates shapefiles for the yearly points created with `combine_pionts_yearly.py`.
+
+- `visualize_cumulative_points_with_counts.py` now takes the files created in `cumulative_points.py` and creates a shapefile with the counts of the points in each polygon. It creates on shapefile for each day.
+
+- `visualize_points_geopandas.py` takes the shape files created in `visualize_cumulative_points_with_counts.py` and creates a .png using background data from the folder `/basisdaten` for each day.
+
+(EXAMPLE)
+
+- `visualize_points_geopandas_yearly.py` creates a yearly visualisation, and an aditional file that writs the name on it.
+
+- `create_video_from_images.py` creates a copy of each of the png created by `visualize_points_geopandas.py` and adds the date to the lower right corner (`/visualizations_with_dates`). All these images are then combined into a .mp4 file.

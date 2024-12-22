@@ -8,3 +8,6 @@ gps/*
 locations/*
 points/*
 slow/*
+
+#venv/
+venv/*
