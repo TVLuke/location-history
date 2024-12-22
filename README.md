@@ -45,7 +45,7 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 
 - `visualize_points_geopandas.py` takes the shape files created in `visualize_cumulative_points_with_counts.py` and creates a .png using background data from the folder `/basisdaten` for each day.
 
-(EXAMPLE)
+![](https://raw.githubusercontent.com/TVLuke/location-history/refs/heads/main/static/20230601_visualization.png)
 
 - `visualize_points_geopandas_yearly.py` creates a yearly visualisation, and an aditional file that writs the name on it.
 
