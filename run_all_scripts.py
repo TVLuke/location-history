@@ -18,7 +18,9 @@ scripts = [
     'visualize_points_geopandas.py',
     # and yearly
     'visualize_points_geopandas_yearly.py'
-    # Script to create a video from images
+    # create cropped images (square and vertical)
+    'create_cropped_images.py',
+    # Script to create videos from images
     'create_video_from_images.py'
 ]
 
