@@ -7,18 +7,26 @@ from datetime import datetime
 base_dir = '/Users/tvluke/projects/newlocationtrack'
 visualizations_dir = os.path.join(base_dir, 'visualizations_geopandas')
 dated_images_dir = os.path.join(base_dir, 'visualizations_with_dates')
+square_images_dir = os.path.join(base_dir, 'visualizations_square')
+vertical_images_dir = os.path.join(base_dir, 'visualizations_vertical')
+square_dated_images_dir = os.path.join(base_dir, 'visualizations_square_with_dates')
+vertical_dated_images_dir = os.path.join(base_dir, 'visualizations_vertical_with_dates')
 
 # Get the current date in YYYYMMDD format
 current_date = datetime.now().strftime('%Y%m%d')
 
-# Define the video output path with the current date
+# Define the video output paths with the current date
 video_output_path = os.path.join(base_dir, f'visualization_video_{current_date}.mp4')
+video_output_path_square = os.path.join(base_dir, f'visualization_video_square_{current_date}.mp4')
+video_output_path_vertical = os.path.join(base_dir, f'visualization_video_vertical_{current_date}.mp4')
 
 # Create new directory for images with date text
 os.makedirs(dated_images_dir, exist_ok=True)
+os.makedirs(square_dated_images_dir, exist_ok=True)
+os.makedirs(vertical_dated_images_dir, exist_ok=True)
 
 # Add a toggle for recreating images
-recreate_images = False
+recreate_images = True
 
 # Introduce the overwrite variable
 overwrite = False
@@ -49,6 +57,29 @@ def add_date_to_image(image_path, date_text, output_dir):
         output_path = os.path.join(output_dir, os.path.basename(image_path))
         img.save(output_path)
 
+# Function to add date text to images in different formats
+def add_date_to_cropped_images(image_dir, output_dir, position):
+    for filename in os.listdir(image_dir):
+        if filename.endswith('.png'):
+            img_path = os.path.join(image_dir, filename)
+            img = Image.open(img_path)
+            draw = ImageDraw.Draw(img)
+
+            # Calculate font size based on desired text height
+            #text_height = 150
+            try:
+                font = ImageFont.truetype("arial.ttf", text_height)
+            except IOError:
+                font = ImageFont.load_default()
+                
+            date_text = filename.split('_')[0]  # Assuming filename starts with date
+            text_width, text_height = draw.textsize(date_text, font=ImageFont.load_default())
+            if position == 'center':
+                text_position = ((img.width - text_width) / 2, img.height - text_height - 10)
+            else:  # 'bottom_left'
+                text_position = (10, img.height - text_height - 10)
+            draw.text(text_position, date_text, font=font, fill='black')
+            img.save(os.path.join(output_dir, filename))
 
 # Process images and add date text
 if recreate_images:
@@ -58,8 +89,15 @@ if recreate_images:
             date_text = image_file.split('_')[0]
             image_path = os.path.join(visualizations_dir, image_file)
             add_date_to_image(image_path, date_text, dated_images_dir)
+    
+        # Add date to square images
+    add_date_to_cropped_images(square_images_dir, square_dated_images_dir, 'bottom_left')
+
+    # Add date to vertical images
+    add_date_to_cropped_images(vertical_images_dir, vertical_dated_images_dir, 'center')
 else:
     print("Skipping image creation as per configuration.")
+
 
 # Create video using ffmpeg with all files in order at 30 fps
 ffmpeg_command = [
@@ -74,3 +112,27 @@ if not overwrite and os.path.exists(video_output_path):
 else:
     subprocess.run(ffmpeg_command)
     print(f'Video created at {video_output_path}')
+
+# Check if the square video file already exists
+if not overwrite and os.path.exists(video_output_path_square):
+    print(f"Square video {video_output_path_square} already exists. Skipping creation.")
+else:
+    # Create square video
+    subprocess.run([
+        'ffmpeg', '-y', '-pattern_type', 'glob', '-framerate', '30', '-i', os.path.join(square_dated_images_dir, '*.png'),
+        '-vf', 'scale=1080:1080,setsar=1:1', '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p',
+        video_output_path_square
+    ])
+    print(f'Square video created at {video_output_path_square}')
+
+# Check if the vertical video file already exists
+if not overwrite and os.path.exists(video_output_path_vertical):
+    print(f"9:16 video {video_output_path_vertical} already exists. Skipping creation.")
+else:
+    # Create vertical 9:16 video
+    subprocess.run([
+        'ffmpeg', '-y', '-pattern_type', 'glob', '-framerate', '30', '-i', os.path.join(vertical_dated_images_dir, '*.png'),
+        '-vf', 'scale=1080:1920,setsar=1:1', '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p',
+        video_output_path_vertical
+    ])
+    print(f'9:16 video created at {video_output_path_vertical}')
