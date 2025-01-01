@@ -6,6 +6,12 @@ Using [GPSLogger for Android](https://gpslogger.app/) (avaliable for fdroid) col
 
 ## Scripts:
 
+The scripts are a kind of pipeline, each createing files required for the next script.
+
+There is a script called `run_all_scripts.py` which runs all the other scripts. Idealy, this just works.
+
+All Scripts have an individual `overwrite` variable, which by default is set to False. it controls, weather files are recreated or if only files are created that do not yet exist.
+
 ### Folder structure
 
 Not suere all scripts create the folders they need... hopefully. anyway, structure is rather flat like this.
