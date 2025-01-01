@@ -69,3 +69,6 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 - `create_cropped_images.py` creates cropped images (square and vertical) of the images created by `visualize_points_geopandas.py`.
 
 - `create_video_from_images.py` creates a copy of each of the png created by `visualize_points_geopandas.py` and adds the date to the lower right corner (`/visualizations_with_dates`). All these images are then combined into a .mp4 file.
+
+## Note on Use of LLMs
+This code was created usisng, among other tools, LLM-Tools like ChatGPT.
