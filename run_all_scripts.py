@@ -9,7 +9,7 @@ scripts = [
     # Script to create cumulative points files
     'cumulative_points.py',
     # Combine the points
-    'combine_pionts_yearly.py',
+    'combine_points_yearly.py',
     # Script to visualize counts to cumulative points
     'visualize_points_with_counts.py',
     # Script to visualize counts to cumulative points
@@ -17,7 +17,7 @@ scripts = [
     # Script to visualize points with geopandas
     'visualize_points_geopandas.py',
     # and yearly
-    'visualize_points_geopandas_yearly.py'
+    'visualize_points_geopandas_yearly.py',
     # create cropped images (square and vertical)
     'create_cropped_images.py',
     # Script to create videos from images

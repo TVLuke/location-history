@@ -29,10 +29,20 @@ os.makedirs(vertical_dated_images_dir, exist_ok=True)
 recreate_images = True
 
 # Introduce the overwrite variable
-overwrite = False
+overwrite = True
+
+# Define the path to the JetBrains font
+font_path = os.path.join(base_dir, 'static', 'droid', 'droid.ttf')
+
+# Path to the background music file
+background_music_path = os.path.join(base_dir, 'static', 'timecode.mp3')
 
 # Function to add date text to images and save them in a new directory
 def add_date_to_image(image_path, date_text, output_dir):
+    output_path = os.path.join(output_dir, os.path.basename(image_path))
+    if not recreate_images and os.path.exists(output_path):
+        print(f"Image {output_path} already exists. Skipping creation.")
+        return
     # Format date to German preferences (DD.MM.YYYY)
     formatted_date = datetime.strptime(date_text, '%Y%m%d').strftime('%d.%m.%Y')
     with Image.open(image_path) as img:
@@ -41,8 +51,10 @@ def add_date_to_image(image_path, date_text, output_dir):
         text_height = 150
         # Use a truetype font if available
         try:
-            font = ImageFont.truetype("arial.ttf", text_height)
+            font = ImageFont.truetype(font_path, text_height)
         except IOError:
+            print("JetBrains font not found. Using default font.")
+            sleep(50)
             font = ImageFont.load_default()
 
         # Calculate text width and adjust position
@@ -54,7 +66,6 @@ def add_date_to_image(image_path, date_text, output_dir):
         draw.text(text_position, formatted_date, font=font, fill='black')
 
         # Save the modified image
-        output_path = os.path.join(output_dir, os.path.basename(image_path))
         img.save(output_path)
 
 # Function to add date text to images in different formats
@@ -62,47 +73,52 @@ def add_date_to_cropped_images(image_dir, output_dir, position):
     for filename in os.listdir(image_dir):
         if filename.endswith('.png'):
             img_path = os.path.join(image_dir, filename)
+            output_path = os.path.join(output_dir, filename)
+            if not recreate_images and os.path.exists(output_path):
+                print(f"Image {output_path} already exists. Skipping creation.")
+                continue
             img = Image.open(img_path)
             draw = ImageDraw.Draw(img)
 
+            date_text = filename.split('_')[0]
+            formatted_date = datetime.strptime(date_text, '%Y%m%d').strftime('%d.%m.%Y')
             # Calculate font size based on desired text height
-            #text_height = 150
+            text_height = 150
+            # Use a truetype font if available
             try:
-                font = ImageFont.truetype("arial.ttf", text_height)
+                font = ImageFont.truetype(font_path, text_height)
             except IOError:
+                print("JetBrains font not found. Using default font.")
+                sleep(50)
                 font = ImageFont.load_default()
-                
-            date_text = filename.split('_')[0]  # Assuming filename starts with date
-            text_width, text_height = draw.textsize(date_text, font=ImageFont.load_default())
+
+            # Calculate text width and adjust position
+            text_bbox = draw.textbbox((0, 0), formatted_date, font=font)
+            text_width = text_bbox[2] - text_bbox[0]
             if position == 'center':
                 text_position = ((img.width - text_width) / 2, img.height - text_height - 10)
             else:  # 'bottom_left'
                 text_position = (10, img.height - text_height - 10)
-            draw.text(text_position, date_text, font=font, fill='black')
-            img.save(os.path.join(output_dir, filename))
+            draw.text(text_position, formatted_date, font=font, fill='black')
+            img.save(output_path)
 
-# Process images and add date text
-if recreate_images:
-    image_files = sorted(os.listdir(visualizations_dir))
-    for image_file in image_files:
-        if image_file.endswith('_visualization.png'):
-            date_text = image_file.split('_')[0]
-            image_path = os.path.join(visualizations_dir, image_file)
-            add_date_to_image(image_path, date_text, dated_images_dir)
+
+image_files = sorted(os.listdir(visualizations_dir))
+for image_file in image_files:
+    if image_file.endswith('_visualization.png'):
+        date_text = image_file.split('_')[0]
+        image_path = os.path.join(visualizations_dir, image_file)
+        add_date_to_image(image_path, date_text, dated_images_dir)
     
-        # Add date to square images
-    add_date_to_cropped_images(square_images_dir, square_dated_images_dir, 'bottom_left')
+add_date_to_cropped_images(square_images_dir, square_dated_images_dir, 'bottom_left')
 
     # Add date to vertical images
-    add_date_to_cropped_images(vertical_images_dir, vertical_dated_images_dir, 'center')
-else:
-    print("Skipping image creation as per configuration.")
-
+add_date_to_cropped_images(vertical_images_dir, vertical_dated_images_dir, 'center')
 
 # Create video using ffmpeg with all files in order at 30 fps
 ffmpeg_command = [
     'ffmpeg', '-y', '-pattern_type', 'glob', '-framerate', '30', '-i', os.path.join(dated_images_dir, '*.png'),
-    '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p',
+    '-i', background_music_path, '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p', '-shortest',
     video_output_path
 ]
 
@@ -120,7 +136,7 @@ else:
     # Create square video
     subprocess.run([
         'ffmpeg', '-y', '-pattern_type', 'glob', '-framerate', '30', '-i', os.path.join(square_dated_images_dir, '*.png'),
-        '-vf', 'scale=1080:1080,setsar=1:1', '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p',
+        '-i', background_music_path, '-vf', 'scale=1080:1080,setsar=1:1', '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p', '-shortest',
         video_output_path_square
     ])
     print(f'Square video created at {video_output_path_square}')
@@ -132,7 +148,7 @@ else:
     # Create vertical 9:16 video
     subprocess.run([
         'ffmpeg', '-y', '-pattern_type', 'glob', '-framerate', '30', '-i', os.path.join(vertical_dated_images_dir, '*.png'),
-        '-vf', 'scale=1080:1920,setsar=1:1', '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p',
+        '-i', background_music_path, '-vf', 'scale=1080:1920,setsar=1:1', '-c:v', 'libx264', '-r', '30', '-pix_fmt', 'yuv420p', '-shortest',
         video_output_path_vertical
     ])
     print(f'9:16 video created at {video_output_path_vertical}')
