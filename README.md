@@ -1,4 +1,4 @@
-# Location Visualization
+# Travel-Lapse
 
 ## Data Collection
 
