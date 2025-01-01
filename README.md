@@ -1,6 +1,14 @@
 # Location Visualisation
 
-Folder structure
+## Data Colection
+
+Using [GPSLogger for Android](https://gpslogger.app/) (avaliable for fdroid) collecting CSV files with geo locations, which are uploaded into the `/gps` folder. (The `/locations` folder contains data from the now mostly defunct google location history) 
+
+## Scripts:
+
+### Folder structure
+
+Not suere all scripts create the folders they need... hopefully. anyway, structure is rather flat like this.
 
 ```
 ├── all
@@ -18,17 +26,22 @@ Folder structure
 ├── shapefile_yearly
 ├── slow
 ├── static
+    ├── droid
+    ├── fantasque
+    ├── jetbrains
+    ├── mono
 ├── venv
 ├── visualizations
 ├── visualizations_geopandas
+├── visualizations_square
+├── visualizations_square_with_dates
+├── visualizations_vertical
+├── visualizations_vertical_with_dates
 ├── visualizations_with_dates
+├── visualizations_with_years
+├── visualizations_yearly_geopandas
+all the python files are in root.
 ```
-
-## Data Colection
-
-Using [GPSLogger for Android](https://gpslogger.app/) (avaliable for fdroid) collecting CSV files with geo locations, which are uploaded into the `/gps` folder. (The `/locations` folder contains data from the now mostly defunct google location history) 
-
-## Scripts:
 
 - `extract_csv_files.py` extracts the data from `/gps` and `/locations` into csv, creating on csv file with geolocations per day, preferebly just a copy from the csv in a zip in gps, opnly if this does not exists, going to the other sources. At the end there should be a csv file with a bunch o geo locations in csv for each day, with a yyymmdd.csv naming scheme like this:
 
