@@ -85,7 +85,7 @@ def plot_shapefile(ax, shapefile_path):
 
 
 # Main execution
-base_dir = '/Users/tvluke/projects/newlocationtrack'
+base_dir = '.'
 shapefile_dir, visualizations_dir, all_dir, fast_dir = setup_directories(base_dir)
 dates_to_process = get_dates_to_process('2020-01-01')
 

@@ -5,8 +5,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 # Define directories
-points_dir = '/Users/tvluke/projects/newlocationtrack/points'
-cumulative_dir = '/Users/tvluke/projects/newlocationtrack/cumulative'
+points_dir = 'points'
+cumulative_dir = 'cumulative'
 
 # Create cumulative directory if it doesn't exist
 os.makedirs(cumulative_dir, exist_ok=True)

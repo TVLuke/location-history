@@ -3,7 +3,7 @@ import json
 from collections import defaultdict
 
 # Define directories
-base_dir = '/Users/tvluke/projects/newlocationtrack'
+base_dir = '.'
 points_dir = os.path.join(base_dir, 'points')
 yearly_dir = os.path.join(base_dir, 'points_yearly')
 os.makedirs(yearly_dir, exist_ok=True)

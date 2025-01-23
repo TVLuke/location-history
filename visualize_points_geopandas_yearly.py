@@ -93,7 +93,7 @@ def add_year_to_image(image_path, year_text, output_dir):
         img.save(output_path)
 
 # Main execution
-base_dir = '/Users/tvluke/projects/newlocationtrack'
+base_dir = '.'
 shapefile_dir, visualizations_dir, all_dir = setup_directories(base_dir)
 
 # Directory for images with year text
