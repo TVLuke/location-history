@@ -60,7 +60,7 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 
 - `calculate_speed_and_filter.py` takes the created CSV files and calculates the speed between two points. It then creates four GeoJSON files: one is a line between all the points of a day in the folder `/all`, one only contains lines if the speed between those points is above 10 km/h (`/fast`), the next one only contains lines between points below 10 km/h (`/slow`), and last but not least, `/points` contains points every 500 meters along the lines with a speed below 10 km/h.
 
-- `cumulative_points.py` takes the points from `/points` and creates a cumulative points file in `/cumulative` with a naming scheme like this: `20200319_points.geojson`. These include all points up to that date. Even if no location file exists for a day, a cumulative one is still present. From now on, every date from the start date is covered.
+- `cumulative_points.py` takes the points from `/points` and creates a cumulative points file in `/cumulative` with a naming scheme like this: `20200319_points.geojson`. These include all points up to that date. Even if no location file exists for a day, a cumulative one is still present. From now on, every date from the start date is covered. **You need to set the start date in the header of this file!**
 
 - `combine_points_yearly.py` takes the points from `/points` (which only include points for distances traveled at less than 10 km/h) and creates a file for each year.
 
@@ -68,7 +68,7 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 
 - `visualize_cumulative_points_with_counts.py` takes the files created in `cumulative_points.py` and creates a shapefile with the counts of the points in each polygon. It creates one shapefile for each day.
 
-- `visualize_points_geopandas.py` takes the shapefiles created in `visualize_cumulative_points_with_counts.py` and creates a `.png` image using background data from the `/basisdaten` folder for each day.
+- `visualize_points_geopandas.py` takes the shapefiles created in `visualize_cumulative_points_with_counts.py` and creates a `.png` image using background data from the `/basisdaten` folder for each day. **You need to set the start date in the header of this file!**
 
 ![](https://raw.githubusercontent.com/TVLuke/location-history/refs/heads/main/static/20230601_visualization.png)
 
