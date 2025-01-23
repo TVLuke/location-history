@@ -23,6 +23,9 @@ visualizations_vertical_with_dates/*
 visualizations_with_dates/*
 visualizations_with_years/*
 visualizations_yearly_geopandas/*
+cumulative_visualizations/*
+output/*
+visualizations/*
 
 #venv/
 venv/*
