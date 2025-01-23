@@ -4,7 +4,7 @@ import subprocess
 from datetime import datetime
 
 # Define directories
-base_dir = '/Users/tvluke/projects/newlocationtrack'
+base_dir = '.'
 visualizations_dir = os.path.join(base_dir, 'visualizations_geopandas')
 dated_images_dir = os.path.join(base_dir, 'visualizations_with_dates')
 square_images_dir = os.path.join(base_dir, 'visualizations_square')

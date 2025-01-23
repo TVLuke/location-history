@@ -8,6 +8,9 @@ import matplotlib as mpl
 import pandas as pd
 from datetime import timedelta
 
+# Set your start date here!
+startdate = '2020-01-01'
+
 overwrite = False
 
 def setup_directories(base_dir):
@@ -85,9 +88,9 @@ def plot_shapefile(ax, shapefile_path):
 
 
 # Main execution
-base_dir = '/Users/tvluke/projects/newlocationtrack'
+base_dir = '.'
 shapefile_dir, visualizations_dir, all_dir, fast_dir = setup_directories(base_dir)
-dates_to_process = get_dates_to_process('2020-01-01')
+dates_to_process = get_dates_to_process(startdate)
 
 for date in dates_to_process:
     shapefile_path = os.path.join(shapefile_dir, f'{date}_VG5000_GEM_with_counts.shp')

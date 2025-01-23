@@ -2,7 +2,7 @@ import os
 from PIL import Image
 
 # Define directories
-base_dir = '/Users/tvluke/projects/newlocationtrack'
+base_dir = '.'
 visualizations_dir = os.path.join(base_dir, 'visualizations_geopandas')
 square_images_dir = os.path.join(base_dir, 'visualizations_square')
 vertical_images_dir = os.path.join(base_dir, 'visualizations_vertical')

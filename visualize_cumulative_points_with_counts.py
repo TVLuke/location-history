@@ -5,7 +5,7 @@ import json
 from shapely.geometry import shape
 
 # Define directories
-base_dir = '/Users/tvluke/projects/newlocationtrack'
+base_dir = '.'
 cumulative_dir = os.path.join(base_dir, 'cumulative')
 shapefile_path = os.path.join(base_dir, 'basisdaten', 'VG5000_GEM.shp')
 output_dir = os.path.join(base_dir, 'shapefile_cumulative')

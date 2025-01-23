@@ -4,15 +4,15 @@ import geopandas as gpd
 import pandas as pd
 from datetime import datetime, timedelta
 
+# Set your start date here!
+start_date = datetime(2020, 1, 1)
+
 # Define directories
-points_dir = '/Users/tvluke/projects/newlocationtrack/points'
-cumulative_dir = '/Users/tvluke/projects/newlocationtrack/cumulative'
+points_dir = 'points'
+cumulative_dir = 'cumulative'
 
 # Create cumulative directory if it doesn't exist
 os.makedirs(cumulative_dir, exist_ok=True)
-
-# Start date
-start_date = datetime(2020, 1, 1)
 
 # Load all points files
 points_files = sorted([f for f in os.listdir(points_dir) if f.endswith('.geojson')])
