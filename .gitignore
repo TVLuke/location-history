@@ -8,6 +8,20 @@ gps/*
 locations/*
 points/*
 slow/*
+points_yearly/*
+shapefile_cumulative/*
+shapefile_yearly/*
+visualization_video_*.mp4
+visualization_video_square_*.mp4
+visualization_video_vertical_*.mp4
+visualizations_geopandas/*
+visualizations_square/*
+visualizations_square_with_dates/*
+visualizations_vertical/*
+visualizations_vertical_with_dates/*
+visualizations_with_dates/*
+visualizations_with_years/*
+visualizations_yearly_geopandas/*
 
 #venv/
 venv/*
