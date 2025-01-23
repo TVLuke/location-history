@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 import csv
 
 # Define the directories
-root_dir = '/Users/tvluke/projects/newlocationtrack'
+root_dir = '/Users/tvluke/projects/newlocationtrack' #TODO
 gps_dir = os.path.join(root_dir, 'gps')
 csv_dir = os.path.join(root_dir, 'csv')
 locations_dir = os.path.join(root_dir, 'locations')
