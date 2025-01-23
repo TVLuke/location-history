@@ -49,6 +49,7 @@ Not sure all scripts create the folders they need... hopefully. Anyway, the stru
 All the Python files are in the root.
 ```
 
+#### prepare data
 - `extract_csv_files.py` extracts the data from `/gps` and `/locations` into CSV files, creating one CSV file with geo-locations per day. Preferably, it uses a copy from the CSV in a zip file in `/gps`. Only if this does not exist does it go to other sources. At the end, there should be a CSV file with a bunch of geo-locations for each day, using a `yyyymmdd.csv` naming scheme like this:
 
 
@@ -59,6 +60,7 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 
 - `split_csv_by_day.py` is an alternative to the script above. It takes CSV files in the format described above from the folder `/csv_raw` and splits same into one file per day into `/csv`. This might be helpful if your CSV data is organized monthly.
 
+#### create images and videos
 - `calculate_speed_and_filter.py` takes the created CSV files and calculates the speed between two points. It then creates four GeoJSON files: one is a line between all the points of a day in the folder `/all`, one only contains lines if the speed between those points is above 10 km/h (`/fast`), the next one only contains lines between points below 10 km/h (`/slow`), and last but not least, `/points` contains points every 500 meters along the lines with a speed below 10 km/h.
 
 - `cumulative_points.py` takes the points from `/points` and creates a cumulative points file in `/cumulative` with a naming scheme like this: `20200319_points.geojson`. These include all points up to that date. Even if no location file exists for a day, a cumulative one is still present. From now on, every date from the start date is covered. **You need to set the start date in the header of this file!**

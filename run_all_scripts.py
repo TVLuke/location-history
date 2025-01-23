@@ -1,9 +1,14 @@
 import subprocess
 
-# Define the scripts to run
-scripts = [
+prepare_data = [
     # Script to extract CSV files
     'extract_csv_files.py',
+    #Script to split CSV by day
+    'split_csv_by_day.py'
+]
+
+# Define the scripts to run. This assumes, that csv files are in the folder `csv` (and named yyyymmdd.csv)
+scripts = [
     # Script to calculate speed and filter data
     'calculate_speed_and_filter.py',
     # Script to create cumulative points files

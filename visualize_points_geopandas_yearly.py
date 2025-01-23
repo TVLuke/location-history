@@ -76,7 +76,7 @@ def add_year_to_image(image_path, year_text, output_dir):
         text_height = 150
         # Use a truetype font if available
         try:
-            font = ImageFont.truetype("black.ttf", text_height)
+            font = ImageFont.truetype("static/black.ttf", text_height)
         except IOError:
             font = ImageFont.load_default()
 
