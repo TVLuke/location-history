@@ -57,6 +57,7 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 2024-03-19T23:12:40.600Z,48.1861084,11.5593367,561.6000366210938,,,,,network,,,,,,,,,,,,,,,
 ```
 
+- `split_csv_by_day.py` is an alternative to the script above. It takes CSV files in the format described above from the folder `/csv_raw` and splits same into one file per day into `/csv`. This might be helpful if your CSV data is organized monthly.
 
 - `calculate_speed_and_filter.py` takes the created CSV files and calculates the speed between two points. It then creates four GeoJSON files: one is a line between all the points of a day in the folder `/all`, one only contains lines if the speed between those points is above 10 km/h (`/fast`), the next one only contains lines between points below 10 km/h (`/slow`), and last but not least, `/points` contains points every 500 meters along the lines with a speed below 10 km/h.
 

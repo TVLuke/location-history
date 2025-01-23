@@ -2,6 +2,7 @@
 
 all/*
 csv/*
+csv_raw/*
 cumulative/*
 fast/*
 gps/*
