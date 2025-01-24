@@ -14,7 +14,7 @@ All scripts have an individual `overwrite` variable, which by default is set to 
 
 ### Folder Structure
 
-Not sure all scripts create the folders they need... hopefully. Anyway, the structure is rather flat, like this:
+Not sure all scripts create the folders they need... hopefully. Anyway, the structure looks like this:
 
 ```
 ├── all
@@ -50,6 +50,9 @@ All the Python files are in the root.
 ```
 
 #### prepare data
+
+To start the process there needs to be CSV Files, with the location track for a day, in the `/csv` Folder, with a naming pattern like `yyyymmdd.csv`. These scripts might help you create them.
+
 - `extract_csv_files.py` extracts the data from `/gps` and `/locations` into CSV files, creating one CSV file with geo-locations per day. Preferably, it uses a copy from the CSV in a zip file in `/gps`. Only if this does not exist does it go to other sources. At the end, there should be a CSV file with a bunch of geo-locations for each day, using a `yyyymmdd.csv` naming scheme like this:
 
 
