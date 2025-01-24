@@ -2,7 +2,7 @@
 
 ## Data Collection
 
-Using [GPSLogger for Android](https://gpslogger.app/) (available on F-Droid) to collect CSV files with geo-locations, which are uploaded into the `/gps` folder. (The `/locations` folder contains data from the now mostly defunct Google Location History.)
+Using [GPSLogger for Android](https://gpslogger.app/) (available on F-Droid) to collect CSV files with geo-locations. Create daily zip files, which are uploaded into the `/gps` folder. (The `/locations` folder contains data from the now mostly defunct Google Location History.)
 
 ## Scripts
 
