@@ -10,6 +10,7 @@ locations/*
 points/*
 slow/*
 points_yearly/*
+Takeout/*
 shapefile_cumulative/*
 shapefile_yearly/*
 visualization_video_*.mp4
