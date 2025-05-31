@@ -11,6 +11,7 @@ points/*
 slow/*
 points_yearly/*
 Takeout/*
+takeout-*
 shapefile_cumulative/*
 shapefile_yearly/*
 visualization_video_*.mp4
