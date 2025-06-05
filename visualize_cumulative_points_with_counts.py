@@ -4,22 +4,28 @@ from datetime import datetime, timedelta
 import json
 from shapely.geometry import shape
 
+overwrite = False
+
 # Define directories
 base_dir = '.'
 cumulative_dir = os.path.join(base_dir, 'cumulative')
-shapefile_path = os.path.join(base_dir, 'basisdaten', 'VG5000_GEM.shp')
+onlygermany = False #if true, only german "Gemeinden" are used, otherwise a european Local Area Units NUTS file is used from http://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/local-administrative-units
+if onlygermany:
+    shapefile_path = os.path.join(base_dir, 'basisdaten', 'VG5000_GEM.shp')
+    # Load the shapefile
+    shapefile_gdf = gpd.read_file(shapefile_path)
+    shapefile_gdf.set_crs(epsg=25832, inplace=True)  # Set initial CRS to EPSG:25832
+    shapefile_gdf = shapefile_gdf.to_crs(epsg=3857)  # Transform to match the map's CRS
+else:
+    shapefile_path = os.path.join(base_dir, 'basisdaten', 'LAU_RG_01M_2023_3035.shp')
+    # Load the shapefile
+    shapefile_gdf = gpd.read_file(shapefile_path)
+    shapefile_gdf.set_crs(epsg=3035, inplace=True)  # Set initial CRS to EPSG:3035
+    shapefile_gdf = shapefile_gdf.to_crs(epsg=3857)  # Transform to match the map's CRS
 output_dir = os.path.join(base_dir, 'shapefile_cumulative')
 
 # Create output directory if it doesn't exist
 os.makedirs(output_dir, exist_ok=True)
-
-# Load the shapefile
-shapefile_gdf = gpd.read_file(shapefile_path)
-shapefile_gdf.set_crs(epsg=25832, inplace=True)  # Set initial CRS to EPSG:25832
-shapefile_gdf = shapefile_gdf.to_crs(epsg=3857)  # Transform to match the map's CRS
-
-# Introduce the overwrite variable
-overwrite = False
 
 # Process each cumulative file
 for cumulative_file in sorted(os.listdir(cumulative_dir)):

@@ -35,18 +35,15 @@ def plot_geojson_files(ax, geojson_files):
         gdf.plot(ax=ax, color='#abc9e5', zorder=3)
 
 
-def plot_shapefile(ax, shapefile_path):
-    """Plot the shapefile with a defined colormap."""
+def plot_shapefile(ax, shapefile_path, country_gdf):
+    """Plot the shapefile with a defined colormap and set map limits based on country_gdf."""
     shapefile_gdf = gpd.read_file(shapefile_path)
     shapefile_gdf.set_crs(epsg=3857, inplace=True, allow_override=True)
     shapefile_gdf = shapefile_gdf.to_crs(epsg=3857)
-    shapefile_gdf.plot(ax=ax, color='#dcd798', edgecolor='none', zorder=2)
-
-    # Set transparency for elements where NUMPOINTS is below 5
-    shapefile_gdf['color'] = shapefile_gdf['NUMPOINTS'].apply(lambda x: (0, 0, 0, 0) if x < 5 else '#dcd798')
+    # Removed initial base plot: shapefile_gdf.plot(ax=ax, color='#e9e6be', edgecolor='none')
 
     # Define a new colormap for NUMPOINTS >= 5
-    colors = ['#dcd798']
+    colors = ['#caaea8']
     steps = 60
     for i in range(1, steps + 1):
         r = int(220 + (134 - 220) * (i / steps))
@@ -56,10 +53,16 @@ def plot_shapefile(ax, shapefile_path):
     colors.extend(['#8616e2' for _ in range(7501, 10001)])  # Extend to cover potential higher values
     defined_cmap = ListedColormap(colors)
 
-    shapefile_gdf[shapefile_gdf['NUMPOINTS'] >= 5].plot(ax=ax, column='NUMPOINTS', cmap=defined_cmap, legend=False, zorder=3)
+    # Filter data to plot only areas with NUMPOINTS >= 5
+    shapefile_gdf_to_plot = shapefile_gdf[shapefile_gdf['NUMPOINTS'] >= 5]
+    if not shapefile_gdf_to_plot.empty:
+        shapefile_gdf_to_plot.plot(ax=ax, column='NUMPOINTS', cmap=defined_cmap, legend=False)
+    # Note: missing_kwds is not used here as we filter out low/NaN values explicitly. 
+    # If NUMPOINTS could be NaN for rows where it's also >= 5 (unlikely), further handling for NaN might be needed before filtering.
 
-    # Set limits in Web Mercator
-    bounds = gpd.GeoSeries(shapefile_gdf.geometry).to_crs(epsg=3857).total_bounds
+    # Calculate and set fixed map bounds from the country_outline_gdf (ensure it's in EPSG:3857)
+    # Assuming country_outline_gdf is already in EPSG:3857 when passed
+    bounds = country_gdf.total_bounds
     zoom_out_factor = 1.1
     x_center = (bounds[0] + bounds[2]) / 2
     y_center = (bounds[1] + bounds[3]) / 2
@@ -67,6 +70,7 @@ def plot_shapefile(ax, shapefile_path):
     y_range = (bounds[3] - bounds[1]) * zoom_out_factor / 2
     ax.set_xlim(x_center - x_range, x_center + x_range)
     ax.set_ylim(y_center - y_range, y_center + y_range)
+
 
 # Function to add year text to images and save them in a new directory
 def add_year_to_image(image_path, year_text, output_dir):
@@ -144,11 +148,12 @@ for shapefile_file in date_files:
     geojson_files = get_year_geojson(date, all_dir)
     print(geojson_files)
     plot_geojson_files(ax, geojson_files)
-    plot_shapefile(ax, shapefile_path)
+    # germany_gdf is already loaded and in EPSG:3857 at this point in the main loop
+    plot_shapefile(ax, shapefile_path, germany_gdf)
 
     # Remove axis labels and ticks
     ax.set_axis_off()
-    ax.set_aspect('equal', adjustable='datalim')
+    ax.set_aspect('equal', adjustable='datalim') # Ensure aspect ratio is equal, adjust data limits to fit figure
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
     # Save the figure
