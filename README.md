@@ -94,7 +94,8 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 - `create_cropped_images.py` creates cropped images (square and vertical) of the images created by `visualize_points_geopandas.py`.
 
 - `create_video_from_images.py` creates a copy of each of the `.png` files created by `visualize_points_geopandas.py` and adds the date to the lower right corner (`/visualizations_with_dates`). It then also crops these into square and vertical images and adds the date to those as well. All these images are then combined into three `.mp4` files (16:9 4K, vertical, and square video).
-    - Variables: `overwrite` if Set to `True` already created files are overwritten, otherwise not.
+    - Variables: `recreate_images` if Set to `True` already created image-files are overwritten, otherwise not.
+    - Variables: `overwrite` if Set to `True` already created video-files are overwritten, otherwise not.
 
 Example: https://www.youtube.com/watch?v=zHYTjOnBznY
 

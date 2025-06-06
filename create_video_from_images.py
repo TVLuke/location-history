@@ -26,10 +26,10 @@ os.makedirs(square_dated_images_dir, exist_ok=True)
 os.makedirs(vertical_dated_images_dir, exist_ok=True)
 
 # Add a toggle for recreating images
-recreate_images = True
+recreate_images = False
 
 # Introduce the overwrite variable
-overwrite = True
+overwrite = False
 
 # Define the path to the JetBrains font
 font_path = os.path.join(base_dir, 'static', 'droid', 'droid.ttf')

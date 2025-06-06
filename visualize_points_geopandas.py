@@ -61,12 +61,25 @@ def plot_shapefile(ax, shapefile_path, country_gdf):
     # Removed initial base plot: shapefile_gdf.plot(ax=ax, color='#e9e6be', edgecolor='none')
 
     # Define a new colormap for NUMPOINTS >= 5
-    colors = ['#caaea8']
+    colors = ['#caaea8']  # First color in the colormap list
     steps = 60
+
+    # Define start and end RGB for the ramp
+    r_start, g_start, b_start = 202, 174, 168  # RGB for #caaea8
+    r_end, g_end, b_end = 134, 22, 226          # RGB for #8616e2
+
+    # Generate `steps` colors for the ramp, these will be appended to the initial '#caaea8'
     for i in range(1, steps + 1):
-        r = int(220 + (134 - 220) * (i / steps))
-        g = int(215 + (22 - 215) * (i / steps))
-        b = int(152 + (226 - 152) * (i / steps))
+        fraction = i / steps
+        r = int(r_start + (r_end - r_start) * fraction)
+        g = int(g_start + (g_end - g_start) * fraction)
+        b = int(b_start + (b_end - b_start) * fraction)
+        
+        # Clamp values to 0-255 range to be safe
+        r = max(0, min(255, r))
+        g = max(0, min(255, g))
+        b = max(0, min(255, b))
+        
         colors.append(f"#{r:02x}{g:02x}{b:02x}")
     colors.extend(['#8616e2' for _ in range(7501, 10001)])  # Extend to cover potential higher values
     defined_cmap = ListedColormap(colors)
@@ -115,10 +128,12 @@ for date in dates_to_process:
     europecoastline_path = os.path.join(base_dir, 'basisdaten', 'europecoastline.shp')
     secondbackground_path = os.path.join(base_dir, 'basisdaten', 'secondbackground.shp')
     germany_path = os.path.join(base_dir, 'basisdaten', 'germanyshape.shp')
+    lakes_path = os.path.join(base_dir, 'basisdaten', 'lakes.shp')
 
     europecoastline_gdf = gpd.read_file(europecoastline_path)
     secondbackground_gdf = gpd.read_file(secondbackground_path)
     germany_gdf = gpd.read_file(germany_path)
+    lakes_gdf = gpd.read_file(lakes_path)
 
     europecoastline_gdf.set_crs(epsg=25832, inplace=True, allow_override=True)
     europecoastline_gdf = europecoastline_gdf.to_crs(epsg=3857)
@@ -128,6 +143,9 @@ for date in dates_to_process:
 
     germany_gdf.set_crs(epsg=25832, inplace=True, allow_override=True)
     germany_gdf = germany_gdf.to_crs(epsg=3857)
+    
+    lakes_gdf.set_crs(epsg=4326, inplace=True, allow_override=True)
+    lakes_gdf = lakes_gdf.to_crs(epsg=3857)
 
     europecoastline_gdf.plot(ax=ax, color='#e9e6be', edgecolor='none') #light background europe
     secondbackground_gdf.plot(ax=ax, color='#4a79a5', edgecolor='none') #water
@@ -139,6 +157,7 @@ for date in dates_to_process:
     # germany_gdf is already loaded and in EPSG:3857 at this point in the main loop
     plot_shapefile(ax, shapefile_path, germany_gdf)
 
+    lakes_gdf.plot(ax=ax, color='#4a79a5', edgecolor='none') #lakes
     # Remove axis labels and ticks
     ax.set_axis_off()
     ax.set_aspect('equal', adjustable='datalim') # Ensure aspect ratio is equal, adjust data limits to fit figure

@@ -6,6 +6,9 @@ from shapely.geometry import shape
 # Define file paths
 base_dir = '.'
 
+# Introduce the overwrite variable
+overwrite = False
+
 onlygermany = False #if true, only german "Gemeinden" are used, otherwise a european Local Area Units NUTS file is used from http://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/local-administrative-units
 if onlygermany:
     shapefile_path = os.path.join(base_dir, 'basisdaten', 'VG5000_GEM.shp')
@@ -22,9 +25,6 @@ else:
 
 output_shapefile_dir = os.path.join(base_dir, 'shapefile_yearly')
 os.makedirs(output_shapefile_dir, exist_ok=True)
-
-# Introduce the overwrite variable
-overwrite = False
 
 # Iterate over each GeoJSON file in points_yearly
 points_yearly_dir = os.path.join(base_dir, 'points_yearly')

@@ -43,18 +43,31 @@ def plot_shapefile(ax, shapefile_path, country_gdf):
     # Removed initial base plot: shapefile_gdf.plot(ax=ax, color='#e9e6be', edgecolor='none')
 
     # Define a new colormap for NUMPOINTS >= 5
-    colors = ['#caaea8']
+    colors = ['#caaea8']  # First color in the colormap list
     steps = 60
+
+    # Define start and end RGB for the ramp
+    r_start, g_start, b_start = 202, 174, 168  # RGB for #caaea8
+    r_end, g_end, b_end = 134, 22, 226          # RGB for #8616e2
+
+    # Generate `steps` colors for the ramp, these will be appended to the initial '#caaea8'
     for i in range(1, steps + 1):
-        r = int(220 + (134 - 220) * (i / steps))
-        g = int(215 + (22 - 215) * (i / steps))
-        b = int(152 + (226 - 152) * (i / steps))
+        fraction = i / steps
+        r = int(r_start + (r_end - r_start) * fraction)
+        g = int(g_start + (g_end - g_start) * fraction)
+        b = int(b_start + (b_end - b_start) * fraction)
+        
+        # Clamp values to 0-255 range to be safe
+        r = max(0, min(255, r))
+        g = max(0, min(255, g))
+        b = max(0, min(255, b))
+        
         colors.append(f"#{r:02x}{g:02x}{b:02x}")
     colors.extend(['#8616e2' for _ in range(7501, 10001)])  # Extend to cover potential higher values
     defined_cmap = ListedColormap(colors)
 
-    # Filter data to plot only areas with NUMPOINTS >= 5
-    shapefile_gdf_to_plot = shapefile_gdf[shapefile_gdf['NUMPOINTS'] >= 5]
+    # Filter data to plot only areas with NUMPOINTS >= 1
+    shapefile_gdf_to_plot = shapefile_gdf[shapefile_gdf['NUMPOINTS'] >= 1]
     if not shapefile_gdf_to_plot.empty:
         shapefile_gdf_to_plot.plot(ax=ax, column='NUMPOINTS', cmap=defined_cmap, legend=False)
     # Note: missing_kwds is not used here as we filter out low/NaN values explicitly. 
@@ -125,7 +138,7 @@ for shapefile_file in date_files:
     # Load and plot additional layers
     europecoastline_path = os.path.join(base_dir, 'basisdaten', 'europecoastline.shp')
     secondbackground_path = os.path.join(base_dir, 'basisdaten', 'secondbackground.shp')
-    germany_path = os.path.join(base_dir, 'basisdaten', 'germanyshape.shp')
+    germany_path = os.path.join(base_dir, 'basisdaten', 'germanyshape2.shp')
 
     europecoastline_gdf = gpd.read_file(europecoastline_path)
     secondbackground_gdf = gpd.read_file(secondbackground_path)
