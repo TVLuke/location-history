@@ -18,9 +18,12 @@ visualization_video_*.mp4
 visualization_video_square_*.mp4
 visualization_video_vertical_*.mp4
 visualizations_geopandas/*
+visualizations_geopandas_progress_info/*
 visualizations_square/*
+visualizations_square_progress_info/*
 visualizations_square_with_dates/*
 visualizations_vertical/*
+visualizations_vertical_progress_info/*
 visualizations_vertical_with_dates/*
 visualizations_with_dates/*
 visualizations_with_years/*

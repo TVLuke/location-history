@@ -25,6 +25,8 @@ scripts = [
     'visualize_points_geopandas_yearly.py',
     # create cropped images (square and vertical)
     'create_cropped_images.py',
+    # add progress info to images (TOP 10 and new Locations)
+    'add_progress_info.py',
     # Script to create videos from images
     'create_video_from_images.py'
 ]

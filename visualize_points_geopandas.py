@@ -11,7 +11,7 @@ from datetime import timedelta
 # Set your start date here!
 startdate = '2020-01-01'
 
-overwrite = True
+overwrite = False
 
 def setup_directories(base_dir):
     """Set up required directories."""
@@ -94,7 +94,7 @@ def plot_shapefile(ax, shapefile_path, country_gdf):
     # Calculate and set fixed map bounds from the country_outline_gdf (ensure it's in EPSG:3857)
     # Assuming country_outline_gdf is already in EPSG:3857 when passed
     bounds = country_gdf.total_bounds
-    zoom_out_factor = 1.1
+    zoom_out_factor = 1.2
     x_center = (bounds[0] + bounds[2]) / 2
     y_center = (bounds[1] + bounds[3]) / 2
     x_range = (bounds[2] - bounds[0]) * zoom_out_factor / 2
