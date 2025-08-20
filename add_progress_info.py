@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 
 # Configuration variables
-overwrite = True
+overwrite = False
 add_progress_info = True
 show_top_10 = True      # Controls whether the top 10 list is added to the image
 show_new_location = True  # Controls whether new locations are displayed in the top left corner

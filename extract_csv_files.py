@@ -3,22 +3,10 @@ import zipfile
 import xml.etree.ElementTree as ET
 import csv
 
-# Define the directories
-root_dir = '.'
-gps_dir = os.path.join(root_dir, 'gps')
-csv_dir = os.path.join(root_dir, 'csv')
-locations_dir = os.path.join(root_dir, 'locations')
-
-# Create the csv directory if it doesn't exist
-os.makedirs(csv_dir, exist_ok=True)
-
 # Define the CSV headers
 csv_headers = [
     "time", "lat", "lon", "elevation", "accuracy", "bearing", "speed", "satellites", "provider", "hdop", "vdop", "pdop", "geoidheight", "ageofdgpsdata", "dgpsid", "activity", "battery", "annotation", "timestamp_ms", "time_offset", "distance", "starttimestamp_ms", "profile_name", "battery_charging"
 ]
-
-# Introduce the overwrite variable
-overwrite = False
 
 # Function to parse GPX and create CSV
 def parse_gpx_to_csv(gpx_file, csv_file):
@@ -94,7 +82,21 @@ def parse_kml_to_csv(kml_file, csv_file):
                     writer.writerow(row)
 
 # Main function to process files
-def main():
+def main(overwrite=None):
+    # Use provided values or defaults
+    overwrite = overwrite if overwrite is not None else False
+    
+    # Define the directories
+    root_dir = '.'
+    gps_dir = os.path.join(root_dir, 'gps')
+    csv_dir = os.path.join(root_dir, 'csv')
+    locations_dir = os.path.join(root_dir, 'locations')
+    
+    # Create the csv directory if it doesn't exist
+    os.makedirs(csv_dir, exist_ok=True)
+    
+    print(f"Extracting CSV files with overwrite={overwrite}")
+    
     # Iterate over all files in the gps directory
     for filename in os.listdir(gps_dir):
         if filename.endswith('.zip'):
@@ -109,6 +111,7 @@ def main():
                             csv_file_path = os.path.join(csv_dir, file)
                             if not os.path.exists(csv_file_path) or overwrite:
                                 zip_ref.extract(file, csv_dir)
+                                print(f"Extracted {file} to {csv_dir}")
                     else:
                         # Check for GPX files
                         gpx_files = [file for file in zip_ref.namelist() if file.endswith('.gpx')]
@@ -119,17 +122,24 @@ def main():
                             # Check if the file exists and overwrite is False
                             if not os.path.exists(csv_file_path) or overwrite:
                                 parse_gpx_to_csv(extracted_gpx_path, csv_file_path)
+                                print(f"Converted {gpx_file} to {csv_filename}")
             except zipfile.BadZipFile:
                 print(f"Skipping {filename}: not a valid zip file")
 
     # Process KML files
-    for kml_file in os.listdir(locations_dir):
-        if kml_file.endswith('.kml'):
-            date_str = kml_file.replace('history', '').replace('-', '').split('.')[0]
-            csv_file = os.path.join(csv_dir, f'{date_str}.csv')
-            # Check if the file exists and overwrite is False
-            if not os.path.exists(csv_file) or overwrite:
-                parse_kml_to_csv(os.path.join(locations_dir, kml_file), csv_file)
+    if os.path.exists(locations_dir):
+        for kml_file in os.listdir(locations_dir):
+            if kml_file.endswith('.kml'):
+                date_str = kml_file.replace('history', '').replace('-', '').split('.')[0]
+                csv_file = os.path.join(csv_dir, f'{date_str}.csv')
+                # Check if the file exists and overwrite is False
+                if not os.path.exists(csv_file) or overwrite:
+                    parse_kml_to_csv(os.path.join(locations_dir, kml_file), csv_file)
+                    print(f"Converted {kml_file} to {date_str}.csv")
+    
+    print("CSV extraction completed")
+    return True
 
 if __name__ == "__main__":
+    # When run directly, use default values
     main()

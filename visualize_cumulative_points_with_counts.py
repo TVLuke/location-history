@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import json
 from shapely.geometry import shape
 
-overwrite = True
+overwrite = False
 
 progress_tracking = True  # Set to True to track progress in a JSON file
 
@@ -33,17 +33,26 @@ os.makedirs(output_dir, exist_ok=True)
 progress_data = {}
 progress_file = os.path.join(base_dir, 'progress.json')
 
+# Dictionary to track all areas that have ever had points
+all_areas_with_points = set()
+
 # Load existing progress data if file exists and we're not overwriting
 if progress_tracking and os.path.exists(progress_file) and not overwrite:
     try:
         with open(progress_file, 'r', encoding='utf-8') as f:
             progress_data = json.load(f)
+            
+            # Initialize all_areas_with_points from existing progress data
+            for date_data in progress_data.values():
+                if 'new_areas' in date_data:
+                    all_areas_with_points.update(date_data['new_areas'])
+                if 'top_areas' in date_data:
+                    all_areas_with_points.update(date_data['top_areas'].keys())
+            
+            print(f"Loaded {len(all_areas_with_points)} previously visited areas from progress.json")
     except json.JSONDecodeError:
         print(f"Warning: Could not parse {progress_file}, starting with empty progress data")
         progress_data = {}
-
-# Dictionary to track all areas that have ever had points
-all_areas_with_points = set()
 
 # Delete progress file if progress_tracking is False
 if not progress_tracking and os.path.exists(progress_file):

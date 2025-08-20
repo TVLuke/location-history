@@ -4,6 +4,7 @@ all/*
 csv/*
 csv_raw/*
 cumulative/*
+__pycache__/*
 fast/*
 gps/*
 locations/*
@@ -28,9 +29,14 @@ visualizations_vertical_with_dates/*
 visualizations_with_dates/*
 visualizations_with_years/*
 visualizations_yearly_geopandas/*
+visualizations_progress_with_dates/*
+visualizations_square_progress_with_dates/*
+visualizations_vertical_progress_with_dates/*
 cumulative_visualizations/*
 output/*
 visualizations/*
 
 #venv/
 venv/*
+progress copy.json
+progress.json

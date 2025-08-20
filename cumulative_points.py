@@ -18,7 +18,7 @@ os.makedirs(cumulative_dir, exist_ok=True)
 points_files = sorted([f for f in os.listdir(points_dir) if f.endswith('.geojson')])
 
 # Process each day
-overwrite = False
+overwrite = True #This takes a while but better to redo if you are not starting fresh anyway. Might introduce some errors otherwise
 current_date = start_date
 
 while current_date <= datetime.now():

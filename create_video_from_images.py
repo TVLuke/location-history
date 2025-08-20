@@ -7,7 +7,7 @@ from datetime import datetime
 recreate_images = True
 
 # Introduce the overwrite variable
-overwrite = False
+overwrite = True
 
 # Define directories
 base_dir = '.'
@@ -24,6 +24,11 @@ vertical_dated_images_dir = os.path.join(base_dir, 'visualizations_vertical_with
 progress_images_dir = os.path.join(base_dir, 'visualizations_geopandas_progress_info')
 square_progress_images_dir = os.path.join(base_dir, 'visualizations_square_progress_info')
 vertical_progress_images_dir = os.path.join(base_dir, 'visualizations_vertical_progress_info')
+
+# Progress info with dates directories
+progress_dated_images_dir = os.path.join(base_dir, 'visualizations_progress_with_dates')
+square_progress_dated_images_dir = os.path.join(base_dir, 'visualizations_square_progress_with_dates')
+vertical_progress_dated_images_dir = os.path.join(base_dir, 'visualizations_vertical_progress_with_dates')
 
 # Get the current date in YYYYMMDD format
 current_date = datetime.now().strftime('%Y%m%d')
@@ -43,6 +48,11 @@ video_output_path_vertical_progress = os.path.join(base_dir, f'visualization_vid
 os.makedirs(dated_images_dir, exist_ok=True)
 os.makedirs(square_dated_images_dir, exist_ok=True)
 os.makedirs(vertical_dated_images_dir, exist_ok=True)
+
+# Create directories for progress info images with dates
+os.makedirs(progress_dated_images_dir, exist_ok=True)
+os.makedirs(square_progress_dated_images_dir, exist_ok=True)
+os.makedirs(vertical_progress_dated_images_dir, exist_ok=True)
 
 # Define the path to the JetBrains font
 font_path = os.path.join(base_dir, 'static', 'droid', 'droid.ttf')
@@ -116,17 +126,33 @@ def add_date_to_cropped_images(image_dir, output_dir, position):
             img.save(output_path)
 
 
+# Process regular visualization images
 image_files = sorted(os.listdir(visualizations_dir))
 for image_file in image_files:
     if image_file.endswith('_visualization.png'):
         date_text = image_file.split('_')[0]
         image_path = os.path.join(visualizations_dir, image_file)
         add_date_to_image(image_path, date_text, dated_images_dir)
-    
-add_date_to_cropped_images(square_images_dir, square_dated_images_dir, 'bottom_left')
 
-    # Add date to vertical images
+# Process regular cropped images
+add_date_to_cropped_images(square_images_dir, square_dated_images_dir, 'bottom_left')
 add_date_to_cropped_images(vertical_images_dir, vertical_dated_images_dir, 'center')
+
+# Process progress info images if they exist
+if os.path.exists(progress_images_dir) and os.listdir(progress_images_dir):
+    progress_image_files = sorted(os.listdir(progress_images_dir))
+    for image_file in progress_image_files:
+        if image_file.endswith('.png'):
+            date_text = image_file.split('_')[0]
+            image_path = os.path.join(progress_images_dir, image_file)
+            add_date_to_image(image_path, date_text, progress_dated_images_dir)
+
+# Process progress info cropped images
+if os.path.exists(square_progress_images_dir) and os.listdir(square_progress_images_dir):
+    add_date_to_cropped_images(square_progress_images_dir, square_progress_dated_images_dir, 'bottom_left')
+
+if os.path.exists(vertical_progress_images_dir) and os.listdir(vertical_progress_images_dir):
+    add_date_to_cropped_images(vertical_progress_images_dir, vertical_progress_dated_images_dir, 'center')
 
 # Function to create a video from image directory
 def create_video(image_dir, output_path, music_path, aspect_ratio=None):
@@ -173,6 +199,6 @@ create_video(vertical_dated_images_dir, video_output_path_vertical, background_m
 
 # Create progress info videos if directories exist
 print("\nCreating progress info videos (if directories exist)...")
-create_video(progress_images_dir, video_output_path_progress, background_music_path)
-create_video(square_progress_images_dir, video_output_path_square_progress, background_music_path, 'square')
-create_video(vertical_progress_images_dir, video_output_path_vertical_progress, background_music_path, 'vertical')
+create_video(progress_dated_images_dir, video_output_path_progress, background_music_path)
+create_video(square_progress_dated_images_dir, video_output_path_square_progress, background_music_path, 'square')
+create_video(vertical_progress_dated_images_dir, video_output_path_vertical_progress, background_music_path, 'vertical')
