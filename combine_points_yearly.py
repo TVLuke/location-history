@@ -9,7 +9,7 @@ yearly_dir = os.path.join(base_dir, 'points_yearly')
 os.makedirs(yearly_dir, exist_ok=True)
 
 # Introduce the overwrite variable
-overwrite = False
+overwrite = True
 
 # Collect points by year
 yearly_points = defaultdict(list)

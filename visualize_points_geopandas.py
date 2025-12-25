@@ -11,7 +11,7 @@ from datetime import timedelta
 # Set your start date here!
 startdate = '2020-01-01'
 
-overwrite = False
+overwrite = True
 
 def setup_directories(base_dir):
     """Set up required directories."""
@@ -34,7 +34,7 @@ def get_last_10_days_geojson(date_str, all_dir):
     geojson_files = []
     for i in range(10):
         day = date - timedelta(days=9-i)
-        if day < pd.to_datetime('2020-01-01'):
+        if day < pd.to_datetime(startdate):
             continue  # Skip days before the start date
         geojson_path = os.path.join(all_dir, f'{day.strftime("%Y%m%d")}_all.geojson')
         if os.path.exists(geojson_path):
@@ -84,12 +84,12 @@ def plot_shapefile(ax, shapefile_path, country_gdf):
     colors.extend(['#8616e2' for _ in range(7501, 10001)])  # Extend to cover potential higher values
     defined_cmap = ListedColormap(colors)
 
-    # Filter data to plot only areas with NUMPOINTS >= 5
-    shapefile_gdf_to_plot = shapefile_gdf[shapefile_gdf['NUMPOINTS'] >= 5]
+    # Filter data to plot only areas with NUMPOINTS >= 3
+    shapefile_gdf_to_plot = shapefile_gdf[shapefile_gdf['NUMPOINTS'] >= 3]
     if not shapefile_gdf_to_plot.empty:
         shapefile_gdf_to_plot.plot(ax=ax, column='NUMPOINTS', cmap=defined_cmap, legend=False)
     # Note: missing_kwds is not used here as we filter out low/NaN values explicitly. 
-    # If NUMPOINTS could be NaN for rows where it's also >= 5 (unlikely), further handling for NaN might be needed before filtering.
+    # If NUMPOINTS could be NaN for rows where it's also >= 3 (unlikely), further handling for NaN might be needed before filtering.
 
     # Calculate and set fixed map bounds from the country_outline_gdf (ensure it's in EPSG:3857)
     # Assuming country_outline_gdf is already in EPSG:3857 when passed

@@ -7,6 +7,7 @@ cumulative/*
 __pycache__/*
 fast/*
 gps/*
+trips/*
 locations/*
 points/*
 slow/*
@@ -29,6 +30,12 @@ visualizations_vertical_with_dates/*
 visualizations_with_dates/*
 visualizations_with_years/*
 visualizations_yearly_geopandas/*
+visualizations_yearly_geopandas_nolines/*
+visualizations_cumulative_geopandas/*
+visualizations_cumulative_geopandas_nolines/*
+visualizations_cumulative_with_years/*
+visualizations_cumulative_with_years_nolines/*
+visualizations_with_years_nolines/*
 visualizations_progress_with_dates/*
 visualizations_square_progress_with_dates/*
 visualizations_vertical_progress_with_dates/*
@@ -40,3 +47,4 @@ visualizations/*
 venv/*
 progress copy.json
 progress.json
+exclusion.json

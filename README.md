@@ -10,7 +10,29 @@ The scripts form a kind of pipeline, each creating files required for the next s
 
 There is a script called `run_all_scripts.py` which runs all the other scripts. Ideally, this just works.
 
-All scripts have an individual `overwrite` variable, which by default is set to `False`. It controls whether files are recreated or if only files are created that do not yet exist.
+### Configuration System
+
+`run_all_scripts.py` uses a centralized configuration dictionary that controls which scripts to run and their parameters. Each script has its own section in the config dictionary with options like:
+
+```python
+config = {
+    'script_name': {
+        'run': True,       # Whether to run this script
+        'overwrite': False  # Whether to overwrite existing files
+        # Other script-specific parameters
+    },
+    # Other scripts...
+}
+```
+
+You can modify these settings in `run_all_scripts.py` to control the behavior of each script. The `run` parameter determines whether a script is executed, and `overwrite` (when supported) controls whether files are recreated or if only files are created that do not yet exist.
+
+### Script Execution Methods
+
+Scripts are executed in two different ways in `run_all_scripts.py`:
+
+1. **As Python modules**: `extract_csv_files.py`, `split_csv_by_day.py`, `add_ice_export_to_csv.py`, and `cleanup_for_speed.py` are imported and run as modules
+2. **As subprocesses**: All other scripts are executed as separate Python processes
 
 ### Folder Structure
 
@@ -21,7 +43,7 @@ Not sure all scripts create the folders they need... hopefully. Anyway, the stru
 ├── basisdaten
 ├── csv
 ├── cumulative
-├── cumulative visualisation
+├── cumulative_visualizations
 ├── fast
 ├── gps
 ├── locations
@@ -36,6 +58,7 @@ Not sure all scripts create the folders they need... hopefully. Anyway, the stru
     ├── fantasque
     ├── jetbrains
     ├── mono
+├── trips
 ├── venv
 ├── visualizations
 ├── visualizations_geopandas
@@ -54,7 +77,8 @@ All the Python files are in the root.
 To start the process there needs to be CSV Files, with the location track for a day, in the `/csv` Folder, with a naming pattern like `yyyymmdd.csv`. These scripts might help you create them.
 
 - `extract_csv_files.py` extracts the data from `/gps` and `/locations` into CSV files, creating one CSV file with geo-locations per day. Preferably, it uses a copy from the CSV in a zip file in `/gps`. Only if this does not exist does it go to other sources. At the end, there should be a CSV file with a bunch of geo-locations for each day, using a `yyyymmdd.csv` naming scheme like this:
-    - Variables: `overwrite` if Set to `True` already created files are overwritten, otherwise not.
+    - **Note**: This script is now imported and run as a module in `run_all_scripts.py`
+    - Config options: `run` (whether to run this script), `overwrite` (if `True` already created files are overwritten, otherwise not)
 
 ```
 time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop,geoidheight,ageofdgpsdata,dgpsid,activity,battery,annotation,timestamp_ms,time_offset,distance,starttimestamp_ms,profile_name,battery_charging
@@ -62,10 +86,20 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 ```
 
 - `split_csv_by_day.py` is an alternative to the script above. It takes CSV files in the format described above from the folder `/csv_raw` and splits same into one file per day into `/csv`. This might be helpful if your CSV data is organized monthly.
+    - **Note**: This script is now imported and run as a module in `run_all_scripts.py`
+    - Config options: `run` (whether to run this script)
+
+- `add_ice_export_to_csv.py` integrates ICE train location data into the CSV files. The `/trips` folder can contain JSON files downloaded from the WifiOnICE portal when traveling on ICE trains. If provided, this more precise train location data is used instead of GPS data during train rides.
+    - **Note**: This script is imported and run as a module in `run_all_scripts.py`
+    - Config options: `run` (whether to run this script)
+
+- `cleanup_for_speed.py` cleans up CSV data in preparation for speed calculation.
+    - **Note**: This script is imported and run as a module in `run_all_scripts.py`
+    - Config options: `run` (whether to run this script)
 
 #### create images and videos
 - `calculate_speed_and_filter.py` takes the created CSV files and calculates the speed between two points. It then creates four GeoJSON files: one is a line between all the points of a day in the folder `/all`, one only contains lines if the speed between those points is above 10 km/h (`/fast`), the next one only contains lines between points below 10 km/h (`/slow`), and last but not least, `/points` contains points every 500 meters along the lines with a speed below 10 km/h.
-    - Variables: `overwrite` if Set to `True` already created files are overwritten, otherwise not.
+    - Config options: `run` (whether to run this script), `overwrite` (if `True` already created files are overwritten, otherwise not)
 
 - `cumulative_points.py` takes the points from `/points` and creates a cumulative points file in `/cumulative` with a naming scheme like this: `20200319_points.geojson`. These include all points up to that date. Even if no location file exists for a day, a cumulative one is still present. From now on, every date from the start date is covered. **You need to set the start date in the header of this file!**
     - Variables: `start_date` sets the Date from which calculation is done. Must be set like `datetime(2020, 1, 1)`
@@ -88,16 +122,10 @@ time,lat,lon,elevation,accuracy,bearing,speed,satellites,provider,hdop,vdop,pdop
 
 ![](https://raw.githubusercontent.com/TVLuke/location-history/refs/heads/main/static/20230601_visualization.png)
 
-- `visualize_points_geopandas_yearly.py` creates a yearly visualization and an additional file that writes the name on it.
+- `visualize_points_geopandas_yearly_new.py` creates a yearly visualization and an additional file that writes the name on it.
     - Variables: `overwrite` if Set to `True` already created files are overwritten, otherwise not.
 
 - `create_cropped_images.py` creates cropped images (square and vertical) of the images created by `visualize_points_geopandas.py`.
-
-- `add_progress_info.py` adds progress info to the images created by `visualize_points_geopandas.py`.
-    - Variables: `overwrite` if Set to `True` already created files are overwritten, otherwise not.
-    - Variables: `add_progress_info` if Set to `True` progress info is added to the images, otherwise not.
-    - Variables: `show_top_10` if Set to `True` the top 10 list is added to the image, otherwise not.
-    - Variables: `show_new_location` if Set to `True` new locations are displayed in the top left corner, otherwise not.
 
 - `create_video_from_images.py` creates a copy of each of the `.png` files created by `visualize_points_geopandas.py` and adds the date to the lower right corner (`/visualizations_with_dates`). It then also crops these into square and vertical images and adds the date to those as well. All these images are then combined into three `.mp4` files (16:9 4K, vertical, and square video).
     - Variables: `recreate_images` if Set to `True` already created image-files are overwritten, otherwise not.

@@ -7,7 +7,7 @@ from shapely.geometry import shape
 base_dir = '.'
 
 # Introduce the overwrite variable
-overwrite = False
+overwrite = True
 
 onlygermany = False #if true, only german "Gemeinden" are used, otherwise a european Local Area Units NUTS file is used from http://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/local-administrative-units
 if onlygermany:

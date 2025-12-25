@@ -13,7 +13,7 @@ os.makedirs(square_images_dir, exist_ok=True)
 os.makedirs(vertical_images_dir, exist_ok=True)
 
 # Default overwrite setting
-overwrite = False
+overwrite = True
 
 # Function to crop images
 def crop_images(overwrite=False):

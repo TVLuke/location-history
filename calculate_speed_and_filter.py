@@ -4,6 +4,7 @@ from datetime import datetime
 from geopy.distance import geodesic, distance as geopy_distance
 import os
 import math
+import pytz
 
 # Define the root directory
 root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -22,7 +23,53 @@ fast_file_template = '{}_fast.geojson'
 points_file_template = '{}_points.geojson'
 
 # Introduce the overwrite variable
-overwrite = False
+overwrite = True
+
+# Load exclusion timeframes from exclusion.json
+exclusion_file_path = os.path.join(root_dir, 'exclusion.json')
+excluded_timeframes = []
+if os.path.exists(exclusion_file_path):
+    with open(exclusion_file_path, 'r') as exclusion_file:
+        exclusion_data = json.load(exclusion_file)
+        excluded_timeframes = exclusion_data.get('times', [])
+    print(f"Loaded {len(excluded_timeframes)} excluded timeframes from exclusion.json")
+else:
+    print("Warning: exclusion.json not found. No timeframes will be excluded.")
+
+# Function to check if a timestamp falls within excluded timeframes
+def is_excluded(timestamp_str):
+    # Parse the timestamp string to datetime object
+    time_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    try:
+        timestamp = datetime.strptime(timestamp_str, time_format)
+    except ValueError:
+        print(f"Warning: Could not parse timestamp: {timestamp_str}")
+        return False
+    
+    # Convert to UTC timezone for proper comparison
+    timestamp = timestamp.replace(tzinfo=pytz.UTC)
+    
+    # Extract date components for comparison
+    timestamp_date = timestamp.date()
+    
+    # Check if the timestamp falls within any excluded timeframe
+    for timeframe in excluded_timeframes:
+        try:
+            # Parse the start and end times from exclusion.json
+            start_time = datetime.strptime(timeframe['start'], "%Y-%m-%d %H:%M:%S.000Z").replace(tzinfo=pytz.UTC)
+            end_time = datetime.strptime(timeframe['end'], "%Y-%m-%d %H:%M:%S.000Z").replace(tzinfo=pytz.UTC)
+            
+            # Extract date components for comparison
+            start_date = start_time.date()
+            
+            # Check if the date matches and the time is within range
+            if start_date == timestamp_date and start_time <= timestamp <= end_time:
+                return True
+        except ValueError as e:
+            print(f"Warning: Error parsing date in exclusion.json: {e}")
+            continue
+    
+    return False
 
 # Function to calculate speed in km/h
 def calculate_speed(point1, point2):
@@ -119,6 +166,73 @@ for csv_filename in os.listdir(csv_dir):
 
         # Skip the header row
         data = data[1:]
+        
+        # Print the excluded timeframes for debugging
+        print(f"Processing file {file_date} with {len(data)} points")
+        print(f"Excluded timeframes: {excluded_timeframes}")
+        
+        # Check if this date should be excluded at all
+        should_check_exclusion = False
+        for timeframe in excluded_timeframes:
+            try:
+                exclusion_date = datetime.strptime(timeframe['start'], "%Y-%m-%d %H:%M:%S.000Z").date()
+                file_date_obj = datetime.strptime(file_date, "%Y%m%d").date()
+                if exclusion_date == file_date_obj:
+                    should_check_exclusion = True
+                    print(f"File date {file_date} matches exclusion date {exclusion_date}")
+                    break
+            except ValueError as e:
+                print(f"Error parsing exclusion date: {e}")
+        
+        # Only filter if the date matches an exclusion date
+        if should_check_exclusion:
+            original_count = len(data)
+            filtered_data = []
+            for point in data:
+                if not is_excluded(point[0]):
+                    filtered_data.append(point)
+            data = filtered_data
+            excluded_count = original_count - len(data)
+            if excluded_count > 0:
+                print(f"Excluded {excluded_count} points from {file_date} that fall within excluded timeframes")
+        else:
+            print(f"File date {file_date} does not match any exclusion dates, including all points")
+        
+        # Create empty GeoJSON files if no points remain after filtering
+        if not data:
+            print(f"No points remain for {file_date} after exclusion filtering. Creating empty GeoJSON files.")
+            # Prepare empty GeoJSON structures
+            slow_paths_geojson = {
+                "type": "FeatureCollection",
+                "features": []
+            }
+            fast_paths_geojson = {
+                "type": "FeatureCollection",
+                "features": []
+            }
+            all_paths_geojson = {
+                "type": "FeatureCollection",
+                "features": []
+            }
+            date_points_geojson = {
+                "type": "FeatureCollection",
+                "features": []
+            }
+            
+            # Write empty GeoJSON files
+            with open(os.path.join(all_dir, all_file_template.format(file_date)), 'w') as all_geojson_file:
+                json.dump(all_paths_geojson, all_geojson_file, indent=2)
+            
+            with open(os.path.join(slow_dir, slow_file_template.format(file_date)), 'w') as slow_geojson_file:
+                json.dump(slow_paths_geojson, slow_geojson_file, indent=2)
+            
+            with open(os.path.join(fast_dir, fast_file_template.format(file_date)), 'w') as fast_geojson_file:
+                json.dump(fast_paths_geojson, fast_geojson_file, indent=2)
+            
+            with open(os.path.join(points_dir, points_file_template.format(file_date)), 'w') as points_geojson_file:
+                json.dump(date_points_geojson, points_geojson_file, indent=2)
+                
+            continue
 
         # Prepare GeoJSON structures
         slow_paths_geojson = {

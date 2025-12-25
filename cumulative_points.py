@@ -53,6 +53,7 @@ while current_date <= datetime.now():
         cumulative_gdf = gpd.GeoDataFrame(pd.concat([cumulative_gdf, points_gdf], ignore_index=True))
     
     cumulative_gdf.to_file(cumulative_file_path, driver='GeoJSON')
+    print(date_str)
     
     # Move to the next day
     current_date += timedelta(days=1)

@@ -1,15 +1,23 @@
 import subprocess
 import extract_csv_files
 import split_csv_by_day
+import add_ice_export_to_csv
+import cleanup_for_speed
 
 # Configuration variables that will be passed to scripts
 config = {
     # Script-specific configuration
     'extract_csv_files': {
         'run': True,       # Whether to run this script
-        'overwrite': False  # Whether to overwrite existing CSV files
+        'overwrite': True  # Whether to overwrite existing CSV files
     },
     'split_csv_by_day': {
+        'run': False        # Whether to run this script
+    },
+    'add_ice_export_to_csv': {
+        'run': True        # Whether to run this script
+    },
+    'cleanup_for_speed': {
         'run': True        # Whether to run this script
     },
     'calculate_speed_and_filter': {
@@ -38,19 +46,13 @@ config = {
         'run': True,       # Whether to run this script
         'overwrite': False  # Whether to overwrite existing visualizations
     },
-    'visualize_points_geopandas_yearly': {
+    'visualize_points_geopandas_yearly_new': {
         'run': True,       # Whether to run this script
         'overwrite': False  # Whether to overwrite existing visualizations
     },
     'create_cropped_images': {
         'run': True,       # Whether to run this script
         'overwrite': False  # Whether to overwrite existing cropped images
-    },
-    'add_progress_info': {
-        'run': True,       # Whether to run this script
-        'overwrite': False,  # Whether to overwrite existing images with progress info
-        'show_top_10': False,  # Whether to show top 10 list
-        'show_new_location': False  # Whether to show new location notifications
     },
     'create_video_from_images': {
         'run': True,       # Whether to run this script
@@ -79,11 +81,9 @@ scripts = [
     # Script to visualize points with geopandas
     'visualize_points_geopandas.py',
     # and yearly
-    'visualize_points_geopandas_yearly.py',
+    'visualize_points_geopandas_yearly_new.py',
     # create cropped images (square and vertical)
     'create_cropped_images.py',
-    # add progress info to images (TOP 10 and new Locations)
-    'add_progress_info.py',
     # Script to create videos from images
     'create_video_from_images.py'
 ]
@@ -103,6 +103,22 @@ if config['split_csv_by_day']['run']:
     print("Finished running split_csv_by_day.")
 else:
     print("Skipping split_csv_by_day (disabled in config)")
+
+# Run add_ice_export_to_csv as a module if enabled
+if config['add_ice_export_to_csv']['run']:
+    print("Running add_ice_export_to_csv as a module...")
+    add_ice_export_to_csv.process_csv_directory()
+    print("Finished running add_ice_export_to_csv.")
+else:
+    print("Skipping add_ice_export_to_csv (disabled in config)")
+
+# Run cleanup_for_speed as a module if enabled
+if config['cleanup_for_speed']['run']:
+    print("Running cleanup_for_speed as a module...")
+    cleanup_for_speed.process_csv_directory()
+    print("Finished running cleanup_for_speed.")
+else:
+    print("Skipping cleanup_for_speed (disabled in config)")
 
 # Execute each main script in sequence if enabled
 for script_name in scripts:
