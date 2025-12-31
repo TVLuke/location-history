@@ -4,7 +4,7 @@ import subprocess
 from datetime import datetime
 
 # Add a toggle for recreating images
-recreate_images = True
+recreate_images = False
 
 # Introduce the overwrite variable
 overwrite = True

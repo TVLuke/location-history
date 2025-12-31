@@ -6,7 +6,7 @@ from matplotlib.colors import ListedColormap
 from PIL import Image, ImageDraw, ImageFont
 
 # Set overwrite flag
-overwrite = True
+overwrite = False
 
 def setup_directories(base_dir):
     """Set up required directories."""

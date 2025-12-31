@@ -1,5 +1,10 @@
 # Changelog
 
+## v.2025.1 (2025-12-31)
+
+### Changes
+- Added `ccc_event_filter.py` script for filtering location data around CCC event dates
+
 ## v.2025 (2025-12-25)
 
 ### Changes

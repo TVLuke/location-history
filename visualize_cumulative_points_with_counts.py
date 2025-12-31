@@ -2,7 +2,7 @@ import os
 import geopandas as gpd
 import json
 
-overwrite = True
+overwrite = False
 
 # Define directories
 base_dir = '.'

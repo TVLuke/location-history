@@ -11,7 +11,7 @@ from datetime import timedelta
 # Set your start date here!
 startdate = '2020-01-01'
 
-overwrite = True
+overwrite = False
 
 def setup_directories(base_dir):
     """Set up required directories."""

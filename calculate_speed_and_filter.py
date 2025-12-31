@@ -171,7 +171,7 @@ for csv_filename in os.listdir(csv_dir):
         print(f"Processing file {file_date} with {len(data)} points")
         print(f"Excluded timeframes: {excluded_timeframes}")
         
-        # Check if this date should be excluded at all
+        # Check if this date has exclusion timeframes
         should_check_exclusion = False
         for timeframe in excluded_timeframes:
             try:
@@ -184,23 +184,20 @@ for csv_filename in os.listdir(csv_dir):
             except ValueError as e:
                 print(f"Error parsing exclusion date: {e}")
         
-        # Only filter if the date matches an exclusion date
+        # Create filtered data for slow paths (used for point counting)
+        # ALL data is used for all_paths (used for drawing lines)
         if should_check_exclusion:
-            original_count = len(data)
-            filtered_data = []
-            for point in data:
-                if not is_excluded(point[0]):
-                    filtered_data.append(point)
-            data = filtered_data
-            excluded_count = original_count - len(data)
+            filtered_data = [point for point in data if not is_excluded(point[0])]
+            excluded_count = len(data) - len(filtered_data)
             if excluded_count > 0:
-                print(f"Excluded {excluded_count} points from {file_date} that fall within excluded timeframes")
+                print(f"Will exclude {excluded_count} points from slow paths (for region counting), but include in all_paths (for line drawing)")
         else:
-            print(f"File date {file_date} does not match any exclusion dates, including all points")
+            filtered_data = data
+            print(f"File date {file_date} does not match any exclusion dates")
         
-        # Create empty GeoJSON files if no points remain after filtering
+        # Create empty GeoJSON files if no points in original data
         if not data:
-            print(f"No points remain for {file_date} after exclusion filtering. Creating empty GeoJSON files.")
+            print(f"No points in {file_date}. Creating empty GeoJSON files.")
             # Prepare empty GeoJSON structures
             slow_paths_geojson = {
                 "type": "FeatureCollection",
@@ -250,7 +247,7 @@ for csv_filename in os.listdir(csv_dir):
             "features": []
         }
 
-        # Iterate over points and calculate speed
+        # Iterate over ALL points for all_paths (used for drawing lines)
         for i in range(len(data) - 1):
             point1 = data[i]
             point2 = data[i + 1]
@@ -263,7 +260,7 @@ for csv_filename in os.listdir(csv_dir):
 
             speed = calculate_speed(point1, point2)
 
-            # Create a feature for all paths
+            # Create a feature for all paths (includes ALL data for line drawing)
             all_feature = {
                 "type": "Feature",
                 "geometry": {
@@ -279,11 +276,41 @@ for csv_filename in os.listdir(csv_dir):
             }
             all_paths_geojson["features"].append(all_feature)
 
-            # Categorize paths based on speed
-            if speed <= 15:
-                slow_paths_geojson["features"].append(all_feature)
-            else:
+            # fast_paths uses all data too
+            if speed > 15:
                 fast_paths_geojson["features"].append(all_feature)
+        
+        # Iterate over FILTERED points for slow_paths (used for region point counting)
+        for i in range(len(filtered_data) - 1):
+            point1 = filtered_data[i]
+            point2 = filtered_data[i + 1]
+
+            # Convert latitude and longitude to float
+            try:
+                p1_lat = float(point1[1])
+                p1_lon = float(point1[2])
+                p2_lat = float(point2[1])
+                p2_lon = float(point2[2])
+            except (ValueError, IndexError):
+                continue
+
+            speed = calculate_speed([point1[0], p1_lat, p1_lon], [point2[0], p2_lat, p2_lon])
+
+            if speed <= 15:
+                slow_feature = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [p1_lon, p1_lat],
+                            [p2_lon, p2_lat]
+                        ]
+                    },
+                    "properties": {
+                        "speed": speed
+                    }
+                }
+                slow_paths_geojson["features"].append(slow_feature)
 
         # Combine paths in each GeoJSON file
         slow_paths_geojson = combine_paths(slow_paths_geojson)

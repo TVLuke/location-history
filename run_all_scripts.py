@@ -3,6 +3,7 @@ import extract_csv_files
 import split_csv_by_day
 import add_ice_export_to_csv
 import cleanup_for_speed
+import ccc_event_filter
 
 # Configuration variables that will be passed to scripts
 config = {
@@ -18,6 +19,9 @@ config = {
         'run': True        # Whether to run this script
     },
     'cleanup_for_speed': {
+        'run': True        # Whether to run this script
+    },
+    'ccc_event_filter': {
         'run': True        # Whether to run this script
     },
     'calculate_speed_and_filter': {
@@ -119,6 +123,14 @@ if config['cleanup_for_speed']['run']:
     print("Finished running cleanup_for_speed.")
 else:
     print("Skipping cleanup_for_speed (disabled in config)")
+
+# Run ccc_event_filter as a module if enabled
+if config['ccc_event_filter']['run']:
+    print("Running ccc_event_filter as a module...")
+    ccc_event_filter.main()
+    print("Finished running ccc_event_filter.")
+else:
+    print("Skipping ccc_event_filter (disabled in config)")
 
 # Execute each main script in sequence if enabled
 for script_name in scripts:
